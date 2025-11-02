@@ -1,0 +1,50 @@
+{
+  "name": "turkish-form-validator",
+  "version": "1.0.0",
+  "description": "Turkish form validation library",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "keywords": [
+    "turkish",
+    "form",
+    "validation",
+    "validator",
+    "türkçe",
+    "form-validation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@vitest/ui": "^4.0.6",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.6"
+  }
+}
