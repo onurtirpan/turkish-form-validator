@@ -44,7 +44,15 @@
     "plate",
     "turkey"
   ],
-  "author": "",
+  "author": "Dilara Uluturhan <dilarauluturhan@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dilarauluturhan/turkish-form-validator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dilarauluturhan/turkish-form-validator/issues"
+  },
+  "homepage": "https://github.com/dilarauluturhan/turkish-form-validator#readme",
   "license": "MIT",
   "sideEffects": false,
   "engines": {
