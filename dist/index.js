@@ -191,7 +191,97 @@ function validateTurkishPhone(phone) {
   };
 }
 
+// src/validators/taxNo.ts
+function cleanTaxNo(taxNo) {
+  return taxNo.replace(/[\s\-]/g, "");
+}
+function formatTaxNo(taxNo) {
+  if (taxNo.length !== 10) {
+    return taxNo;
+  }
+  return `${taxNo.substring(0, 3)}-${taxNo.substring(3, 6)}-${taxNo.substring(
+    6,
+    9
+  )}-${taxNo.substring(9)}`;
+}
+function formatTaxNoFunction(taxNo) {
+  const cleaned = cleanTaxNo(taxNo);
+  return formatTaxNo(cleaned);
+}
+function validateTaxNo(taxNo) {
+  if (!taxNo || taxNo.trim() === "") {
+    return {
+      valid: false,
+      formatted: null,
+      message: "Vergi numaras\u0131 bo\u015F olamaz",
+      checksum: null
+    };
+  }
+  const cleaned = cleanTaxNo(taxNo);
+  if (!/^\d+$/.test(cleaned)) {
+    return {
+      valid: false,
+      formatted: null,
+      message: "Vergi numaras\u0131 sadece rakam i\xE7ermelidir",
+      checksum: null
+    };
+  }
+  if (cleaned.length < 10) {
+    return {
+      valid: false,
+      formatted: null,
+      message: "Vergi numaras\u0131 10 haneli olmal\u0131d\u0131r",
+      checksum: null
+    };
+  }
+  if (cleaned.length > 10) {
+    return {
+      valid: false,
+      formatted: null,
+      message: "Vergi numaras\u0131 10 haneden uzun olamaz",
+      checksum: null
+    };
+  }
+  if (cleaned[0] === "0") {
+    return {
+      valid: false,
+      formatted: null,
+      message: "Vergi numaras\u0131 0 ile ba\u015Flayamaz",
+      checksum: null
+    };
+  }
+  const digits = cleaned.split("").map(Number);
+  const tempValues = [];
+  for (let i = 0; i < 9; i++) {
+    const digit = digits[i];
+    let value = (digit + (10 - i)) % 10;
+    if (value === 9) {
+      value = 0;
+    }
+    tempValues.push(value);
+  }
+  const total = tempValues.reduce((sum, value) => sum + value, 0);
+  const checkDigit = (10 - total % 10) % 10;
+  const checksumValid = checkDigit === digits[9];
+  if (!checksumValid) {
+    return {
+      valid: false,
+      formatted: null,
+      message: "Invalid tax number",
+      checksum: false
+    };
+  }
+  return {
+    valid: true,
+    formatted: formatTaxNo(cleaned),
+    message: "Valid tax number",
+    checksum: true
+  };
+}
+
+exports.formatTaxNoFunction = formatTaxNoFunction;
 exports.validateTCKN = validateTCKN;
+exports.validateTaxNo = validateTaxNo;
 exports.validateTurkishPhone = validateTurkishPhone;
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map
