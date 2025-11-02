@@ -1,456 +1,395 @@
 # Turkish Form Validator 🇹🇷
 
-[![npm version](https://img.shields.io/npm/v/turkish-form-validator)](https://www.npmjs.com/package/turkish-form-validator)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+A comprehensive validation library for Turkish forms including TCKN, phone numbers, tax numbers, license plates, and IBAN validation.
 
-A comprehensive TypeScript library for validating Turkish-specific form fields. This package provides robust validation functions for TCKN (Turkish ID), phone numbers, tax numbers, license plates, and IBANs with full TypeScript support.
+## 📋 Features
 
-Türkçe form alanları için kapsamlı bir validasyon kütüphanesi. TCKN, telefon, vergi numarası, plaka ve IBAN validasyonu için TypeScript destekli güçlü fonksiyonlar sağlar.
+- ✅ **TCKN Validation** - Validate Turkish National Identification Numbers
+- ✅ **Phone Number Validation** - Validate Turkish mobile phone numbers with formatting
+- ✅ **Tax Number Validation** - Validate Turkish tax numbers with checksum
+- ✅ **License Plate Validation** - Validate Turkish vehicle license plates
+- ✅ **IBAN Validation** - Validate Turkish IBAN numbers
+- ✅ **TypeScript Support** - Full TypeScript definitions included
+- ✅ **Zero Dependencies** - Lightweight with no external dependencies
 
----
-
-## 📋 Features / Özellikler
-
-- ✅ **TCKN (Turkish ID) Validation** - Turkish Identification Number validation with algorithm verification
-- ✅ **Phone Number Validation** - Turkish phone number format validation and formatting
-- ✅ **Tax Number Validation** - Turkish tax number (Vergi Numarası) validation
-- ✅ **License Plate Validation** - Turkish license plate format validation
-- ✅ **IBAN Validation** - Turkish IBAN validation with bank name detection
-- ✅ **TypeScript Support** - Full TypeScript type definitions included
-- ✅ **Framework Agnostic** - Works with React, Vue, Angular, or vanilla JavaScript
-- ✅ **Tree-shaking Support** - Import only what you need
-- ✅ **Zero Dependencies** - Lightweight and fast
-
----
-
-## 🚀 Installation / Kurulum
+## 🚀 Installation
 
 ```bash
 npm install turkish-form-validator
 ```
 
+or
+
 ```bash
 yarn add turkish-form-validator
 ```
 
-```bash
-pnpm add turkish-form-validator
-```
+## 📖 Usage
 
----
-
-## 📖 Usage / Kullanım
-
-### TCKN Validation / TCKN Validasyonu
-
-Validates Turkish identification numbers using the official algorithm.
+### TCKN Validation
 
 ```typescript
 import { validateTCKN } from "turkish-form-validator";
 
-const result = validateTCKN("12345678901");
-
+const result = validateTCKN("12345678950");
 if (result.isValid) {
   console.log("Valid TCKN");
 } else {
-  console.error(result.error); // Error message in Turkish
+  console.log(result.error);
 }
 ```
 
-**With custom error messages / Özel hata mesajları ile:**
-
-```typescript
-const result = validateTCKN("12345678901", {
-  emptyError: "TCKN is required",
-  tooShortError: "TCKN must be 11 digits",
-  invalidAlgorithmError: "Invalid TCKN",
-});
-```
-
-### Phone Number Validation / Telefon Numarası Validasyonu
-
-Validates and formats Turkish phone numbers.
+### Phone Number Validation
 
 ```typescript
 import { validateTurkishPhone } from "turkish-form-validator";
 
-const result = validateTurkishPhone("05321234567");
-
+const result = validateTurkishPhone("0532 123 45 67");
 if (result.valid) {
-  console.log(result.formatted); // "0532 123 45 67"
+  console.log("Valid phone:", result.formatted); // +905321234567
 } else {
-  console.error(result.message);
+  console.log(result.message);
 }
 ```
 
-**Supports multiple formats / Birden fazla format destekler:**
+### Tax Number Validation
 
 ```typescript
-validateTurkishPhone("05321234567"); // ✅ Valid
-validateTurkishPhone("+905321234567"); // ✅ Valid
-validateTurkishPhone("5321234567"); // ✅ Valid
-validateTurkishPhone("905321234567"); // ✅ Valid
-```
-
-### Tax Number Validation / Vergi Numarası Validasyonu
-
-Validates Turkish tax numbers (Vergi Numarası).
-
-```typescript
-import { validateTaxNo, formatTaxNoFunction } from "turkish-form-validator";
+import { validateTaxNo } from "turkish-form-validator";
 
 const result = validateTaxNo("1234567890");
-
 if (result.valid) {
-  console.log("Valid tax number");
+  console.log("Valid tax number:", result.formatted);
 } else {
-  console.error(result.message);
+  console.log(result.message);
 }
-
-// Format tax number
-const formatted = formatTaxNoFunction("1234567890"); // "123 456 789 0"
 ```
 
-### License Plate Validation / Plaka Validasyonu
-
-Validates Turkish license plate formats.
+### License Plate Validation
 
 ```typescript
 import { validateTurkishPlate } from "turkish-form-validator";
 
-const result = validateTurkishPlate("34ABC123");
-
+const result = validateTurkishPlate("06 ABC 123");
 if (result.valid) {
-  console.log("Valid license plate");
-  console.log(result.city); // City name
-  console.log(result.formatted); // Formatted plate
+  console.log("Valid plate:", result.formatted);
+  console.log("City:", result.cityName);
+  console.log("Type:", result.plateType);
 } else {
-  console.error(result.message);
+  console.log(result.message);
 }
 ```
 
-### IBAN Validation / IBAN Validasyonu
-
-Validates Turkish IBANs and detects bank names.
+### IBAN Validation
 
 ```typescript
-import {
-  validateTurkishIBAN,
-  formatIBAN,
-  getBankName,
-} from "turkish-form-validator";
+import { validateTurkishIBAN } from "turkish-form-validator";
 
 const result = validateTurkishIBAN("TR330006100519786457841326");
-
 if (result.valid) {
-  console.log(result.bankName); // Bank name in Turkish
-  console.log(result.formatted); // Formatted IBAN
-  console.log(result.bankCode); // Bank code
+  console.log("Valid IBAN:", result.formatted);
+  console.log("Bank:", result.bankName);
 } else {
-  console.error(result.message);
+  console.log(result.message);
 }
-
-// Helper functions / Yardımcı fonksiyonlar
-const formatted = formatIBAN("TR330006100519786457841326");
-const bankName = getBankName("00061"); // "Akbank T.A.Ş."
 ```
 
----
+## 🎯 Framework Examples
 
-## 🎯 Framework Examples / Framework Örnekleri
-
-### React Example / React Örneği
+### React Example
 
 ```tsx
-import React, { useState } from "react";
-import {
-  validateTCKN,
-  validateTurkishPhone,
-  validateTurkishIBAN,
-} from "turkish-form-validator";
+import { useState } from "react";
+import { validateTCKN } from "turkish-form-validator";
 
-function MyForm() {
-  const [tckn, setTckn] = useState("");
-  const [phone, setPhone] = useState("");
-  const [iban, setIban] = useState("");
+function TCKNInput() {
+  const [error, setError] = useState<string>("");
 
-  const handleTCKNChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setTckn(value);
-    const result = validateTCKN(value);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const result = validateTCKN(e.target.value);
     if (!result.isValid) {
-      console.error(result.error);
-    }
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPhone(value);
-    const result = validateTurkishPhone(value);
-    if (result.valid) {
-      console.log("Formatted:", result.formatted);
+      setError(result.error || "");
     } else {
-      console.error(result.message);
+      setError("");
     }
   };
 
   return (
-    <form>
-      <input
-        type="text"
-        value={tckn}
-        onChange={handleTCKNChange}
-        placeholder="TCKN"
-      />
-      <input
-        type="text"
-        value={phone}
-        onChange={handlePhoneChange}
-        placeholder="Telefon"
-      />
-    </form>
+    <div>
+      <input type="text" onChange={handleChange} />
+      {error && <span className="error">{error}</span>}
+    </div>
   );
 }
 ```
 
-### Vue 3 Example (Composition API) / Vue 3 Örneği
+### Vue 3 Example (Composition API)
 
 ```vue
 <template>
-  <form>
-    <input v-model="tckn" @input="validateTCKNInput" placeholder="TCKN" />
-    <input v-model="phone" @input="validatePhoneInput" placeholder="Telefon" />
-    <input v-model="iban" @input="validateIBANInput" placeholder="IBAN" />
-  </form>
+  <div>
+    <input v-model="phone" @input="validate" />
+    <p v-if="error" class="error">{{ error }}</p>
+  </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import {
-  validateTCKN,
-  validateTurkishPhone,
-  validateTurkishIBAN,
-} from "turkish-form-validator";
+import { validateTurkishPhone } from "turkish-form-validator";
 
-const tckn = ref("");
 const phone = ref("");
-const iban = ref("");
+const error = ref("");
 
-const validateTCKNInput = () => {
-  const result = validateTCKN(tckn.value);
-  if (!result.isValid) {
-    console.error(result.error);
-  }
-};
-
-const validatePhoneInput = () => {
+const validate = () => {
   const result = validateTurkishPhone(phone.value);
-  if (result.valid) {
-    console.log("Formatted:", result.formatted);
-  }
-};
-
-const validateIBANInput = () => {
-  const result = validateTurkishIBAN(iban.value);
-  if (result.valid) {
-    console.log("Bank:", result.bankName);
-  }
+  error.value = result.valid ? "" : result.message;
 };
 </script>
 ```
 
-### Angular Example / Angular Örneği
+### Angular Example
 
 ```typescript
 import { Component } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
-import { validateTCKN, validateTurkishPhone } from "turkish-form-validator";
+import { FormControl, Validators } from "@angular/forms";
+import { validateTCKN } from "turkish-form-validator";
 
 @Component({
-  selector: "app-my-form",
+  selector: "app-tckn-input",
   template: `
-    <form [formGroup]="form">
-      <input formControlName="tckn" placeholder="TCKN" />
-      <input formControlName="phone" placeholder="Telefon" />
-      <input formControlName="iban" placeholder="IBAN" />
-    </form>
+    <input [formControl]="tcknControl" />
+    <div *ngIf="tcknControl.invalid && tcknControl.dirty">
+      {{ tcknControl.errors?.['tckn'] }}
+    </div>
   `,
 })
-export class MyFormComponent {
-  form = new FormGroup({
-    tckn: new FormControl(""),
-    phone: new FormControl(""),
-    iban: new FormControl(""),
-  });
+export class TCKNInputComponent {
+  tcknControl = new FormControl("", [this.tcknValidator]);
 
-  constructor() {
-    this.form.get("tckn")?.valueChanges.subscribe((value) => {
-      const result = validateTCKN(value);
-      if (!result.isValid) {
-        this.form.get("tckn")?.setErrors({ invalid: result.error });
-      }
-    });
-
-    this.form.get("phone")?.valueChanges.subscribe((value) => {
-      const result = validateTurkishPhone(value);
-      if (!result.valid) {
-        this.form.get("phone")?.setErrors({ invalid: result.message });
-      }
-    });
+  tcknValidator(control: FormControl) {
+    const result = validateTCKN(control.value);
+    return result.isValid ? null : { tckn: result.error };
   }
 }
 ```
 
-### Vanilla JavaScript Example / Saf JavaScript Örneği
+### Vanilla JavaScript Example
 
 ```javascript
-import {
-  validateTCKN,
-  validateTurkishPhone,
-  validateTurkishIBAN,
-} from "turkish-form-validator";
+import { validateTaxNo } from "turkish-form-validator";
 
-// TCKN Validation
-const tcknResult = validateTCKN("12345678901");
-console.log(tcknResult.isValid);
+document.getElementById("tax-input").addEventListener("input", (e) => {
+  const result = validateTaxNo(e.target.value);
+  const errorDiv = document.getElementById("error");
 
-// Phone Validation
-const phoneResult = validateTurkishPhone("05321234567");
-if (phoneResult.valid) {
-  console.log("Formatted phone:", phoneResult.formatted);
-}
-
-// IBAN Validation
-const ibanResult = validateTurkishIBAN("TR330006100519786457841326");
-if (ibanResult.valid) {
-  console.log("Bank:", ibanResult.bankName);
-}
+  if (result.valid) {
+    errorDiv.textContent = "";
+    errorDiv.style.display = "none";
+  } else {
+    errorDiv.textContent = result.message;
+    errorDiv.style.display = "block";
+  }
+});
 ```
 
-### TypeScript Example with Types / TypeScript Tip Örnekleri
+## Contact With
+
+Dilara Uluturhan - [LinkedIn](https://www.linkedin.com/in/dilarauluturhan/) - dilarauluturhan@outlook.com
+
+---
+
+# Türkçe Form Doğrulayıcı 🇹🇷
+
+## 📋 Özellikler
+
+- ✅ **TCKN Validasyonu** - Türkiye Cumhuriyeti Kimlik Numarası doğrulama
+- ✅ **Telefon Numarası Validasyonu** - Türk cep telefonu numaralarını formatlama ile doğrulama
+- ✅ **Vergi Numarası Validasyonu** - Türk vergi numaralarını checksum ile doğrulama
+- ✅ **Plaka Validasyonu** - Türk araç plakalarını doğrulama
+- ✅ **IBAN Validasyonu** - Türk IBAN numaralarını doğrulama
+- ✅ **TypeScript Desteği** - Tam TypeScript tanımları dahil
+- ✅ **Sıfır Bağımlılık** - Harici bağımlılığı olmayan kütüphane
+
+## 🚀 Kurulum
+
+```bash
+npm install turkish-form-validator
+```
+
+veya
+
+```bash
+yarn add turkish-form-validator
+```
+
+## 📖 Kullanım
+
+### TCKN Validasyonu
 
 ```typescript
-import {
-  validateTCKN,
-  validateTurkishPhone,
-  validateTurkishIBAN,
-  type ValidationResult,
-  type PhoneValidationResult,
-  type IBANValidationResult,
-} from "turkish-form-validator";
+import { validateTCKN } from "turkish-form-validator";
 
-const tcknResult: ValidationResult = validateTCKN("12345678901");
-const phoneResult: PhoneValidationResult = validateTurkishPhone("05321234567");
-const ibanResult: IBANValidationResult = validateTurkishIBAN(
-  "TR330006100519786457841326"
-);
+const result = validateTCKN("12345678950");
+if (result.isValid) {
+  console.log("Geçerli TCKN");
+} else {
+  console.log(result.error);
+}
 ```
 
----
+### Telefon Numarası Validasyonu
 
-## 📚 API Reference / API Referansı
+```typescript
+import { validateTurkishPhone } from "turkish-form-validator";
 
-### `validateTCKN(tckn: string, options?: ValidateTCKNOptions): ValidationResult`
+const result = validateTurkishPhone("0532 123 45 67");
+if (result.valid) {
+  console.log("Geçerli telefon:", result.formatted); // +905321234567
+} else {
+  console.log(result.message);
+}
+```
 
-Validates Turkish identification numbers.
+### Vergi Numarası Validasyonu
 
-**Options:**
+```typescript
+import { validateTaxNo } from "turkish-form-validator";
 
-- `emptyError?: string` - Error message when TCKN is empty
-- `tooShortError?: string` - Error message when TCKN is too short
-- `tooLongError?: string` - Error message when TCKN is too long
-- `firstDigitZeroError?: string` - Error message when first digit is zero
-- `invalidAlgorithmError?: string` - Error message when algorithm check fails
-- `notDigitsError?: string` - Error message when TCKN contains non-digits
+const result = validateTaxNo("1234567890");
+if (result.valid) {
+  console.log("Geçerli vergi numarası:", result.formatted);
+} else {
+  console.log(result.message);
+}
+```
 
-### `validateTurkishPhone(phone: string): PhoneValidationResult`
+### Plaka Validasyonu
 
-Validates and formats Turkish phone numbers.
+```typescript
+import { validateTurkishPlate } from "turkish-form-validator";
 
-**Returns:**
+const result = validateTurkishPlate("06 ABC 123");
+if (result.valid) {
+  console.log("Geçerli plaka:", result.formatted);
+  console.log("İl:", result.cityName);
+  console.log("Tip:", result.plateType);
+} else {
+  console.log(result.message);
+}
+```
 
-- `valid: boolean` - Whether the phone number is valid
-- `formatted: string | null` - Formatted phone number (e.g., "0532 123 45 67")
-- `message: string` - Error message if invalid
+### IBAN Validasyonu
 
-### `validateTaxNo(taxNo: string): TaxNoValidationResult`
+```typescript
+import { validateTurkishIBAN } from "turkish-form-validator";
 
-Validates Turkish tax numbers.
+const result = validateTurkishIBAN("TR330006100519786457841326");
+if (result.valid) {
+  console.log("Geçerli IBAN:", result.formatted);
+  console.log("Banka:", result.bankName);
+} else {
+  console.log(result.message);
+}
+```
 
-**Returns:**
+## 🎯 Framework Örnekleri
 
-- `valid: boolean` - Whether the tax number is valid
-- `message: string` - Error message if invalid
+### React Örneği
 
-### `formatTaxNoFunction(taxNo: string): string`
+```tsx
+import { useState } from "react";
+import { validateTCKN } from "turkish-form-validator";
 
-Formats tax number with spaces (e.g., "123 456 789 0").
+function TCKNInput() {
+  const [error, setError] = useState<string>("");
 
-### `validateTurkishPlate(plate: string): PlateValidationResult`
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const result = validateTCKN(e.target.value);
+    if (!result.isValid) {
+      setError(result.error || "");
+    } else {
+      setError("");
+    }
+  };
 
-Validates Turkish license plates.
+  return (
+    <div>
+      <input type="text" onChange={handleChange} />
+      {error && <span className="error">{error}</span>}
+    </div>
+  );
+}
+```
 
-**Returns:**
+### Vue 3 Örneği (Composition API)
 
-- `valid: boolean` - Whether the plate is valid
-- `city: string | null` - City name if valid
-- `formatted: string | null` - Formatted plate number
-- `message: string` - Error message if invalid
+```vue
+<template>
+  <div>
+    <input v-model="phone" @input="validate" />
+    <p v-if="error" class="error">{{ error }}</p>
+  </div>
+</template>
 
-### `validateTurkishIBAN(iban: string): IBANValidationResult`
+<script setup lang="ts">
+import { ref } from "vue";
+import { validateTurkishPhone } from "turkish-form-validator";
 
-Validates Turkish IBANs.
+const phone = ref("");
+const error = ref("");
 
-**Returns:**
+const validate = () => {
+  const result = validateTurkishPhone(phone.value);
+  error.value = result.valid ? "" : result.message;
+};
+</script>
+```
 
-- `valid: boolean` - Whether the IBAN is valid
-- `bankName: string | null` - Bank name in Turkish
-- `bankCode: string | null` - Bank code
-- `formatted: string | null` - Formatted IBAN
-- `message: string` - Error message if invalid
+### Angular Örneği
 
-### `formatIBAN(iban: string): string`
+```typescript
+import { Component } from "@angular/core";
+import { FormControl, Validators } from "@angular/forms";
+import { validateTCKN } from "turkish-form-validator";
 
-Formats IBAN with spaces (e.g., "TR33 0006 1005 1978 6457 8413 26").
+@Component({
+  selector: "app-tckn-input",
+  template: `
+    <input [formControl]="tcknControl" />
+    <div *ngIf="tcknControl.invalid && tcknControl.dirty">
+      {{ tcknControl.errors?.['tckn'] }}
+    </div>
+  `,
+})
+export class TCKNInputComponent {
+  tcknControl = new FormControl("", [this.tcknValidator]);
 
-### `getBankName(bankCode: string): string | null`
+  tcknValidator(control: FormControl) {
+    const result = validateTCKN(control.value);
+    return result.isValid ? null : { tckn: result.error };
+  }
+}
+```
 
-Returns bank name for a given bank code.
+### JavaScript Örneği
 
-### `calculateCheckDigit(bankCode: string, reserveDigit: string, accountNumber: string): string`
+```javascript
+import { validateTaxNo } from "turkish-form-validator";
 
-Calculates IBAN check digit.
+document.getElementById("tax-input").addEventListener("input", (e) => {
+  const result = validateTaxNo(e.target.value);
+  const errorDiv = document.getElementById("error");
 
----
+  if (result.valid) {
+    errorDiv.textContent = "";
+    errorDiv.style.display = "none";
+  } else {
+    errorDiv.textContent = result.message;
+    errorDiv.style.display = "block";
+  }
+});
+```
 
-## 🌟 Supported Formats / Desteklenen Formatlar
+## İletişim Kuralım
 
-- ✅ ES Modules (`import`/`export`)
-- ✅ CommonJS (`require`/`module.exports`)
-- ✅ TypeScript type definitions
-- ✅ Browser and Node.js compatible
-- ✅ Tree-shaking support
-
----
-
-## 🤝 Contributing / Katkıda Bulunma
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) first.
-
-Katkılarınızı bekliyoruz! Lütfen önce [Katkı Rehberi](CONTRIBUTING.md)'ni okuyun.
-
----
-
-## 📄 License / Lisans
-
-MIT License - see LICENSE file for details.
-
-MIT Lisansı - detaylar için LICENSE dosyasına bakın.
-
----
-
-## 📞 Support / Destek
-
-For issues, feature requests, or questions, please open an issue on GitHub.
-
-Sorunlar, özellik istekleri veya sorular için lütfen GitHub'da bir issue açın.
+Dilara Uluturhan - [LinkedIn](https://www.linkedin.com/in/dilarauluturhan/) - dilarauluturhan@outlook.com
