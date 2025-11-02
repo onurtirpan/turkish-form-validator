@@ -630,7 +630,7 @@ function validateTurkishIBAN(iban) {
       accountNumber: null,
       checkDigits,
       checksumValid: false,
-      message: "Ge\xE7ersiz IBAN (mod-97 kontrol\xFC ba\u015Far\u0131s\u0131z)"
+      message: "Ge\xE7ersiz IBAN"
     };
   }
   const bankName = getBankName(bankCode);
