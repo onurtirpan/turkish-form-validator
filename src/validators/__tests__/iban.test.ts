@@ -47,7 +47,7 @@ describe("validateTurkishIBAN", () => {
     const result = validateTurkishIBAN("TR330006100519786457841325");
     expect(result.valid).toBe(false);
     expect(result.checksumValid).toBe(false);
-    expect(result.message).toBe("Geçersiz IBAN (mod-97 kontrolü başarısız)");
+    expect(result.message).toBe("Geçersiz IBAN");
   });
 
   it("should reject IBAN that is too short", () => {
