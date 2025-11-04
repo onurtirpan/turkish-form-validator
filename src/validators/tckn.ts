@@ -27,39 +27,29 @@ export function validateTCKN(
 ): ValidationResult {
   const opts = { ...DEFAULT_OPTIONS, ...options };
 
+  const fail = (error: string): ValidationResult => ({
+    isValid: false,
+    error,
+  });
+
   if (!tckn) {
-    return {
-      isValid: false,
-      error: opts.emptyError,
-    };
+    return fail(opts.emptyError);
   }
 
   if (tckn.length > 11) {
-    return {
-      isValid: false,
-      error: opts.tooLongError,
-    };
+    return fail(opts.tooLongError);
   }
 
   if (tckn.length < 11) {
-    return {
-      isValid: false,
-      error: opts.tooShortError,
-    };
+    return fail(opts.tooShortError);
   }
 
   if (tckn[0] === "0") {
-    return {
-      isValid: false,
-      error: opts.firstDigitZeroError,
-    };
+    return fail(opts.firstDigitZeroError);
   }
 
   if (!/^\d+$/.test(tckn)) {
-    return {
-      isValid: false,
-      error: opts.notDigitsError,
-    };
+    return fail(opts.notDigitsError);
   }
 
   const digits = tckn.split("").map(Number);
@@ -80,10 +70,7 @@ export function validateTCKN(
     checkDigit1 += 10;
   }
   if (checkDigit1 !== digits[9]) {
-    return {
-      isValid: false,
-      error: opts.invalidAlgorithmError,
-    };
+    return fail(opts.invalidAlgorithmError);
   }
 
   const sumOfFirstTen = digits
@@ -91,10 +78,7 @@ export function validateTCKN(
     .reduce((sum, digit) => sum + digit, 0);
   const checkDigit2 = sumOfFirstTen % 10;
   if (checkDigit2 !== digits[10]) {
-    return {
-      isValid: false,
-      error: opts.invalidAlgorithmError,
-    };
+    return fail(opts.invalidAlgorithmError);
   }
 
   return {

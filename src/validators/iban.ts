@@ -89,75 +89,52 @@ export function formatIBAN(iban: string): string {
 }
 
 export function validateTurkishIBAN(iban: string): IBANValidationResult {
+  const fail = (message: string): IBANValidationResult => ({
+    valid: false,
+    formatted: null,
+    bankCode: null,
+    bankName: null,
+    accountNumber: null,
+    checkDigits: null,
+    checksumValid: null,
+    message,
+  });
+
+  const failWithChecksum = (message: string, checkDigits: string): IBANValidationResult => ({
+    valid: false,
+    formatted: null,
+    bankCode: null,
+    bankName: null,
+    accountNumber: null,
+    checkDigits,
+    checksumValid: false,
+    message,
+  });
+
   if (!iban || iban.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN boş olamaz",
-    };
+    return fail("IBAN boş olamaz");
   }
 
   const cleaned = cleanIBAN(iban);
 
   if (cleaned.length < 2 || !cleaned.startsWith("TR")) {
     if (!cleaned.startsWith("TR") && cleaned.length >= 2) {
-      return {
-        valid: false,
-        formatted: null,
-        bankCode: null,
-        bankName: null,
-        accountNumber: null,
-        checkDigits: null,
-        checksumValid: null,
-        message: "IBAN TR ile başlamalıdır",
-      };
+      return fail("IBAN TR ile başlamalıdır");
     }
   }
 
   if (!cleaned.startsWith("TR")) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN TR ile başlamalıdır",
-    };
+    return fail("IBAN TR ile başlamalıdır");
   }
 
   if (cleaned.length !== 26) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN 26 karakter olmalıdır",
-    };
+    return fail("IBAN 26 karakter olmalıdır");
   }
 
   const remaining = cleaned.substring(2);
 
   if (!/^\d{24}$/.test(remaining)) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN TR sonrası sadece rakam içermelidir",
-    };
+    return fail("IBAN TR sonrası sadece rakam içermelidir");
   }
 
   const checkDigits = cleaned.substring(2, 4);
@@ -169,16 +146,7 @@ export function validateTurkishIBAN(iban: string): IBANValidationResult {
   const checksumValid = remainder === 1;
 
   if (!checksumValid) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: checkDigits,
-      checksumValid: false,
-      message: "Geçersiz IBAN",
-    };
+    return failWithChecksum("Geçersiz IBAN", checkDigits);
   }
 
   const bankName = getBankName(bankCode);

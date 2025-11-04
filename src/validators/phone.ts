@@ -9,54 +9,36 @@ function cleanPhoneNumber(phone: string): string {
 }
 
 export function validateTurkishPhone(phone: string): PhoneValidationResult {
+  const fail = (message: string): PhoneValidationResult => ({
+    valid: false,
+    formatted: null,
+    message,
+  });
+
   if (!phone || phone.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numarası boş olamaz",
-    };
+    return fail("Telefon numarası boş olamaz");
   }
 
   const cleaned = cleanPhoneNumber(phone);
 
   if (!/^\d+$/.test(cleaned)) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numarası sadece rakam içermelidir",
-    };
+    return fail("Telefon numarası sadece rakam içermelidir");
   }
 
   if (cleaned.length < 11) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numarası 11 haneli olmalıdır",
-    };
+    return fail("Telefon numarası 11 haneli olmalıdır");
   }
 
   if (cleaned.length > 11) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numarası 11 haneden uzun olamaz",
-    };
+    return fail("Telefon numarası 11 haneden uzun olamaz");
   }
 
   if (cleaned[0] !== "0") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numarası 0 ile başlamalıdır",
-    };
+    return fail("Telefon numarası 0 ile başlamalıdır");
   }
 
   if (cleaned[1] !== "5") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Sadece cep telefonu numaraları kabul edilir (5XX)",
-    };
+    return fail("Sadece cep telefonu numaraları kabul edilir (5XX)");
   }
 
   const formatted = `+90${cleaned.substring(1)}`;

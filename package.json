@@ -55,6 +55,7 @@
   "homepage": "https://github.com/uluturhandilara/turkish-form-validator#readme",
   "license": "MIT",
   "sideEffects": false,
+  "type": "module",
   "engines": {
     "node": ">=14.0.0"
   },
