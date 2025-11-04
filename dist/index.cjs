@@ -1,3 +1,5 @@
+'use strict';
+
 // src/validators/tckn.ts
 var DEFAULT_OPTIONS = {
   emptyError: "TCKN 11 haneli olmal\u0131d\u0131r",
@@ -9,35 +11,24 @@ var DEFAULT_OPTIONS = {
 };
 function validateTCKN(tckn, options) {
   const opts = { ...DEFAULT_OPTIONS, ...options };
+  const fail = (error) => ({
+    isValid: false,
+    error
+  });
   if (!tckn) {
-    return {
-      isValid: false,
-      error: opts.emptyError
-    };
+    return fail(opts.emptyError);
   }
   if (tckn.length > 11) {
-    return {
-      isValid: false,
-      error: opts.tooLongError
-    };
+    return fail(opts.tooLongError);
   }
   if (tckn.length < 11) {
-    return {
-      isValid: false,
-      error: opts.tooShortError
-    };
+    return fail(opts.tooShortError);
   }
   if (tckn[0] === "0") {
-    return {
-      isValid: false,
-      error: opts.firstDigitZeroError
-    };
+    return fail(opts.firstDigitZeroError);
   }
   if (!/^\d+$/.test(tckn)) {
-    return {
-      isValid: false,
-      error: opts.notDigitsError
-    };
+    return fail(opts.notDigitsError);
   }
   const digits = tckn.split("").map(Number);
   let oddSum = 0;
@@ -54,18 +45,12 @@ function validateTCKN(tckn, options) {
     checkDigit1 += 10;
   }
   if (checkDigit1 !== digits[9]) {
-    return {
-      isValid: false,
-      error: opts.invalidAlgorithmError
-    };
+    return fail(opts.invalidAlgorithmError);
   }
   const sumOfFirstTen = digits.slice(0, 10).reduce((sum, digit) => sum + digit, 0);
   const checkDigit2 = sumOfFirstTen % 10;
   if (checkDigit2 !== digits[10]) {
-    return {
-      isValid: false,
-      error: opts.invalidAlgorithmError
-    };
+    return fail(opts.invalidAlgorithmError);
   }
   return {
     isValid: true
@@ -77,48 +62,29 @@ function cleanPhoneNumber(phone) {
   return phone.replace(/[\s\-\(\)\+]/g, "").replace(/^90/, "0");
 }
 function validateTurkishPhone(phone) {
+  const fail = (message) => ({
+    valid: false,
+    formatted: null,
+    message
+  });
   if (!phone || phone.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numaras\u0131 bo\u015F olamaz"
-    };
+    return fail("Telefon numaras\u0131 bo\u015F olamaz");
   }
   const cleaned = cleanPhoneNumber(phone);
   if (!/^\d+$/.test(cleaned)) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numaras\u0131 sadece rakam i\xE7ermelidir"
-    };
+    return fail("Telefon numaras\u0131 sadece rakam i\xE7ermelidir");
   }
   if (cleaned.length < 11) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numaras\u0131 11 haneli olmal\u0131d\u0131r"
-    };
+    return fail("Telefon numaras\u0131 11 haneli olmal\u0131d\u0131r");
   }
   if (cleaned.length > 11) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numaras\u0131 11 haneden uzun olamaz"
-    };
+    return fail("Telefon numaras\u0131 11 haneden uzun olamaz");
   }
   if (cleaned[0] !== "0") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Telefon numaras\u0131 0 ile ba\u015Flamal\u0131d\u0131r"
-    };
+    return fail("Telefon numaras\u0131 0 ile ba\u015Flamal\u0131d\u0131r");
   }
   if (cleaned[1] !== "5") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Sadece cep telefonu numaralar\u0131 kabul edilir (5XX)"
-    };
+    return fail("Sadece cep telefonu numaralar\u0131 kabul edilir (5XX)");
   }
   const formatted = `+90${cleaned.substring(1)}`;
   return {
@@ -146,46 +112,33 @@ function formatTaxNoFunction(taxNo) {
   return formatTaxNo(cleaned);
 }
 function validateTaxNo(taxNo) {
+  const fail = (message) => ({
+    valid: false,
+    formatted: null,
+    message,
+    checksum: null
+  });
+  const failWithChecksum = (message) => ({
+    valid: false,
+    formatted: null,
+    message,
+    checksum: false
+  });
   if (!taxNo || taxNo.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numaras\u0131 bo\u015F olamaz",
-      checksum: null
-    };
+    return fail("Vergi numaras\u0131 bo\u015F olamaz");
   }
   const cleaned = cleanTaxNo(taxNo);
   if (!/^\d+$/.test(cleaned)) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numaras\u0131 sadece rakam i\xE7ermelidir",
-      checksum: null
-    };
+    return fail("Vergi numaras\u0131 sadece rakam i\xE7ermelidir");
   }
   if (cleaned.length < 10) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numaras\u0131 10 haneli olmal\u0131d\u0131r",
-      checksum: null
-    };
+    return fail("Vergi numaras\u0131 10 haneli olmal\u0131d\u0131r");
   }
   if (cleaned.length > 10) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numaras\u0131 10 haneden uzun olamaz",
-      checksum: null
-    };
+    return fail("Vergi numaras\u0131 10 haneden uzun olamaz");
   }
   if (cleaned[0] === "0") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numaras\u0131 0 ile ba\u015Flayamaz",
-      checksum: null
-    };
+    return fail("Vergi numaras\u0131 0 ile ba\u015Flayamaz");
   }
   const digits = cleaned.split("").map(Number);
   const tempValues = [];
@@ -201,12 +154,7 @@ function validateTaxNo(taxNo) {
   const checkDigit = (10 - total % 10) % 10;
   const checksumValid = checkDigit === digits[9];
   if (!checksumValid) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Ge\xE7ersiz vergi numaras\u0131",
-      checksum: false
-    };
+    return failWithChecksum("Ge\xE7ersiz vergi numaras\u0131");
   }
   return {
     valid: true,
@@ -365,108 +313,46 @@ function getPlateType(letterLength, numberLength) {
   return "Bilinmeyen";
 }
 function validateTurkishPlate(plate) {
+  const fail = (message) => ({
+    valid: false,
+    formatted: null,
+    cityCode: null,
+    cityName: null,
+    letters: null,
+    numbers: null,
+    plateType: null,
+    message
+  });
   if (!plate || plate.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Plaka bo\u015F olamaz"
-    };
+    return fail("Plaka bo\u015F olamaz");
   }
   const parsed = parsePlate(plate);
   if (parsed.error) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: parsed.error
-    };
+    return fail(parsed.error);
   }
   if (!parsed.cityCode || !parsed.letters || !parsed.numbers) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Plaka format\u0131 ge\xE7ersiz"
-    };
+    return fail("Plaka format\u0131 ge\xE7ersiz");
   }
   const { cityCode, letters, numbers } = parsed;
   if (!/^\d{2}$/.test(cityCode)) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "\u0130l kodu 2 rakamdan olu\u015Fmal\u0131d\u0131r"
-    };
+    return fail("\u0130l kodu 2 rakamdan olu\u015Fmal\u0131d\u0131r");
   }
   const cityCodeNum = parseInt(cityCode, 10);
   if (cityCodeNum < 1 || cityCodeNum > 81) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "\u0130l kodu 01-81 aras\u0131 olmal\u0131d\u0131r"
-    };
+    return fail("\u0130l kodu 01-81 aras\u0131 olmal\u0131d\u0131r");
   }
   const cityName = CITY_CODES[cityCode] || null;
   if (letters.length < 1 || letters.length > 3) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Harf k\u0131sm\u0131 1-3 karakter olmal\u0131d\u0131r"
-    };
+    return fail("Harf k\u0131sm\u0131 1-3 karakter olmal\u0131d\u0131r");
   }
   const forbiddenLetters = ["\xC7", "\u011E", "\u0130", "\xD6", "\u015E", "\xDC", "Q", "W", "X"];
   for (const letter of letters) {
     if (forbiddenLetters.includes(letter)) {
-      return {
-        valid: false,
-        formatted: null,
-        cityCode: null,
-        cityName: null,
-        letters: null,
-        numbers: null,
-        plateType: null,
-        message: `Plakada kullan\u0131lamayan harf: ${letter}`
-      };
+      return fail(`Plakada kullan\u0131lamayan harf: ${letter}`);
     }
   }
   if (numbers.length < 2 || numbers.length > 4) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Rakam k\u0131sm\u0131 2-4 hane olmal\u0131d\u0131r"
-    };
+    return fail("Rakam k\u0131sm\u0131 2-4 hane olmal\u0131d\u0131r");
   }
   const formatted = `${cityCode} ${letters} ${numbers}`;
   const plateType = getPlateType(letters.length, numbers.length);
@@ -550,69 +436,44 @@ function formatIBAN(iban) {
   )} ${cleaned.substring(24, 26)}`;
 }
 function validateTurkishIBAN(iban) {
+  const fail = (message) => ({
+    valid: false,
+    formatted: null,
+    bankCode: null,
+    bankName: null,
+    accountNumber: null,
+    checkDigits: null,
+    checksumValid: null,
+    message
+  });
+  const failWithChecksum = (message, checkDigits2) => ({
+    valid: false,
+    formatted: null,
+    bankCode: null,
+    bankName: null,
+    accountNumber: null,
+    checkDigits: checkDigits2,
+    checksumValid: false,
+    message
+  });
   if (!iban || iban.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN bo\u015F olamaz"
-    };
+    return fail("IBAN bo\u015F olamaz");
   }
   const cleaned = cleanIBAN(iban);
   if (cleaned.length < 2 || !cleaned.startsWith("TR")) {
     if (!cleaned.startsWith("TR") && cleaned.length >= 2) {
-      return {
-        valid: false,
-        formatted: null,
-        bankCode: null,
-        bankName: null,
-        accountNumber: null,
-        checkDigits: null,
-        checksumValid: null,
-        message: "IBAN TR ile ba\u015Flamal\u0131d\u0131r"
-      };
+      return fail("IBAN TR ile ba\u015Flamal\u0131d\u0131r");
     }
   }
   if (!cleaned.startsWith("TR")) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN TR ile ba\u015Flamal\u0131d\u0131r"
-    };
+    return fail("IBAN TR ile ba\u015Flamal\u0131d\u0131r");
   }
   if (cleaned.length !== 26) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN 26 karakter olmal\u0131d\u0131r"
-    };
+    return fail("IBAN 26 karakter olmal\u0131d\u0131r");
   }
   const remaining = cleaned.substring(2);
   if (!/^\d{24}$/.test(remaining)) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits: null,
-      checksumValid: null,
-      message: "IBAN TR sonras\u0131 sadece rakam i\xE7ermelidir"
-    };
+    return fail("IBAN TR sonras\u0131 sadece rakam i\xE7ermelidir");
   }
   const checkDigits = cleaned.substring(2, 4);
   const bankCode = cleaned.substring(4, 9);
@@ -620,16 +481,7 @@ function validateTurkishIBAN(iban) {
   const remainder = mod97(cleaned);
   const checksumValid = remainder === 1;
   if (!checksumValid) {
-    return {
-      valid: false,
-      formatted: null,
-      bankCode: null,
-      bankName: null,
-      accountNumber: null,
-      checkDigits,
-      checksumValid: false,
-      message: "Ge\xE7ersiz IBAN"
-    };
+    return failWithChecksum("Ge\xE7ersiz IBAN", checkDigits);
   }
   const bankName = getBankName(bankCode);
   const formatted = formatIBAN(cleaned);
@@ -645,6 +497,14 @@ function validateTurkishIBAN(iban) {
   };
 }
 
-export { calculateCheckDigit, formatIBAN, formatTaxNoFunction, getBankName, validateTCKN, validateTaxNo, validateTurkishIBAN, validateTurkishPhone, validateTurkishPlate };
-//# sourceMappingURL=index.mjs.map
-//# sourceMappingURL=index.mjs.map
+exports.calculateCheckDigit = calculateCheckDigit;
+exports.formatIBAN = formatIBAN;
+exports.formatTaxNoFunction = formatTaxNoFunction;
+exports.getBankName = getBankName;
+exports.validateTCKN = validateTCKN;
+exports.validateTaxNo = validateTaxNo;
+exports.validateTurkishIBAN = validateTurkishIBAN;
+exports.validateTurkishPhone = validateTurkishPhone;
+exports.validateTurkishPlate = validateTurkishPlate;
+//# sourceMappingURL=index.cjs.map
+//# sourceMappingURL=index.cjs.map
