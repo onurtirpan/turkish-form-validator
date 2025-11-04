@@ -177,118 +177,57 @@ function getPlateType(letterLength: number, numberLength: number): string {
 }
 
 export function validateTurkishPlate(plate: string): PlateValidationResult {
+  const fail = (message: string): PlateValidationResult => ({
+    valid: false,
+    formatted: null,
+    cityCode: null,
+    cityName: null,
+    letters: null,
+    numbers: null,
+    plateType: null,
+    message,
+  });
+
   if (!plate || plate.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Plaka boş olamaz",
-    };
+    return fail("Plaka boş olamaz");
   }
 
   const parsed = parsePlate(plate);
 
   if (parsed.error) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: parsed.error,
-    };
+    return fail(parsed.error);
   }
 
   if (!parsed.cityCode || !parsed.letters || !parsed.numbers) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Plaka formatı geçersiz",
-    };
+    return fail("Plaka formatı geçersiz");
   }
 
   const { cityCode, letters, numbers } = parsed;
 
   if (!/^\d{2}$/.test(cityCode)) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "İl kodu 2 rakamdan oluşmalıdır",
-    };
+    return fail("İl kodu 2 rakamdan oluşmalıdır");
   }
 
   const cityCodeNum = parseInt(cityCode, 10);
   if (cityCodeNum < 1 || cityCodeNum > 81) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "İl kodu 01-81 arası olmalıdır",
-    };
+    return fail("İl kodu 01-81 arası olmalıdır");
   }
 
   const cityName = CITY_CODES[cityCode] || null;
 
   if (letters.length < 1 || letters.length > 3) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Harf kısmı 1-3 karakter olmalıdır",
-    };
+    return fail("Harf kısmı 1-3 karakter olmalıdır");
   }
 
   const forbiddenLetters = ["Ç", "Ğ", "İ", "Ö", "Ş", "Ü", "Q", "W", "X"];
   for (const letter of letters) {
     if (forbiddenLetters.includes(letter)) {
-      return {
-        valid: false,
-        formatted: null,
-        cityCode: null,
-        cityName: null,
-        letters: null,
-        numbers: null,
-        plateType: null,
-        message: `Plakada kullanılamayan harf: ${letter}`,
-      };
+      return fail(`Plakada kullanılamayan harf: ${letter}`);
     }
   }
 
   if (numbers.length < 2 || numbers.length > 4) {
-    return {
-      valid: false,
-      formatted: null,
-      cityCode: null,
-      cityName: null,
-      letters: null,
-      numbers: null,
-      plateType: null,
-      message: "Rakam kısmı 2-4 hane olmalıdır",
-    };
+    return fail("Rakam kısmı 2-4 hane olmalıdır");
   }
 
   const formatted = `${cityCode} ${letters} ${numbers}`;

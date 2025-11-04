@@ -25,51 +25,40 @@ export function formatTaxNoFunction(taxNo: string): string {
 }
 
 export function validateTaxNo(taxNo: string): TaxNoValidationResult {
+  const fail = (message: string): TaxNoValidationResult => ({
+    valid: false,
+    formatted: null,
+    message,
+    checksum: null,
+  });
+
+  const failWithChecksum = (message: string): TaxNoValidationResult => ({
+    valid: false,
+    formatted: null,
+    message,
+    checksum: false,
+  });
+
   if (!taxNo || taxNo.trim() === "") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numarası boş olamaz",
-      checksum: null,
-    };
+    return fail("Vergi numarası boş olamaz");
   }
 
   const cleaned = cleanTaxNo(taxNo);
 
   if (!/^\d+$/.test(cleaned)) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numarası sadece rakam içermelidir",
-      checksum: null,
-    };
+    return fail("Vergi numarası sadece rakam içermelidir");
   }
 
   if (cleaned.length < 10) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numarası 10 haneli olmalıdır",
-      checksum: null,
-    };
+    return fail("Vergi numarası 10 haneli olmalıdır");
   }
 
   if (cleaned.length > 10) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numarası 10 haneden uzun olamaz",
-      checksum: null,
-    };
+    return fail("Vergi numarası 10 haneden uzun olamaz");
   }
 
   if (cleaned[0] === "0") {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Vergi numarası 0 ile başlayamaz",
-      checksum: null,
-    };
+    return fail("Vergi numarası 0 ile başlayamaz");
   }
 
   const digits = cleaned.split("").map(Number);
@@ -92,12 +81,7 @@ export function validateTaxNo(taxNo: string): TaxNoValidationResult {
   const checksumValid = checkDigit === digits[9];
 
   if (!checksumValid) {
-    return {
-      valid: false,
-      formatted: null,
-      message: "Geçersiz vergi numarası",
-      checksum: false,
-    };
+    return failWithChecksum("Geçersiz vergi numarası");
   }
 
   return {
